@@ -1,0 +1,26 @@
+# HVH-1 SD-card image configuration.  Copy to hvh-image.conf and edit.
+# Lines are KEY=VALUE; empty values are skipped.
+
+# Home Assistant OS release: "latest" asks version.home-assistant.io (falls back to GitHub)
+HAOS_VERSION=latest
+# stable | beta | dev   (only used when HAOS_VERSION=latest)
+HAOS_CHANNEL=stable
+
+# Device hostname shown on the network (Home Assistant UI: http://<hostname>.local:8123)
+HOSTNAME=homeassistant
+
+# Optional Wi-Fi. Leave WIFI_SSID empty for Ethernet-only first boot (recommended).
+WIFI_SSID=
+WIFI_PSK=
+# 2-letter regulatory country code (needed for 5 GHz channels)
+WIFI_COUNTRY=US
+
+# Optional: public SSH key for the HAOS developer console on port 22222
+SSH_AUTHORIZED_KEY=
+
+# 1 = serial console on TP1 (TX) / TP2 (RX), 115200 8N1, 3.3 V
+DEBUG_UART=0
+# 1 = use the CM5 U.FL antenna (external SMA through the enclosure knock-out)
+EXTERNAL_ANTENNA=0
+# Rechargeable RTC cell on J8 (e.g. ML-2020): charge voltage in microvolts, 0 = do not charge
+RTC_CHARGE_UV=0

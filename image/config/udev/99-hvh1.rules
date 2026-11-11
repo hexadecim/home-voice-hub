@@ -1,0 +1,4 @@
+# HVH-1 carrier peripherals: stable device names
+# Zigbee/Thread radio (MGM210P behind the on-board CP2102N, product string programmed at factory)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{product}=="HVH-1 Zigbee", SYMLINK+="ttyHVHZigbee"
+# Without the factory string use /dev/serial/by-id/usb-Silicon_Labs_CP2102N_*

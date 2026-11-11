@@ -1,0 +1,33 @@
+# Builds the HVH-1 SD-card image against the latest Home Assistant OS release.
+# Wi-Fi credentials come from repository secrets (HVH_WIFI_SSID / HVH_WIFI_PSK), never from git.
+name: Build HVH-1 image
+on:
+  workflow_dispatch:
+    inputs:
+      haos_version: {description: "HAOS version or 'latest'", default: "latest"}
+      channel: {description: "stable / beta / dev", default: "stable"}
+  schedule:
+    - cron: "17 4 * * 1"        # weekly, picks up new HAOS releases
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y mtools xz-utils
+      - name: Write config
+        env:
+          SSID: ${{ secrets.HVH_WIFI_SSID }}
+          PSK: ${{ secrets.HVH_WIFI_PSK }}
+          SSHKEY: ${{ secrets.HVH_SSH_KEY }}
+        run: |
+          cp hvh-image.conf.example hvh-image.conf
+          sed -i "s|^HAOS_VERSION=.*|HAOS_VERSION=${{ inputs.haos_version || 'latest' }}|" hvh-image.conf
+          sed -i "s|^HAOS_CHANNEL=.*|HAOS_CHANNEL=${{ inputs.channel || 'stable' }}|" hvh-image.conf
+          [ -n "$SSID" ] && sed -i "s|^WIFI_SSID=.*|WIFI_SSID=$SSID|; s|^WIFI_PSK=.*|WIFI_PSK=$PSK|" hvh-image.conf || true
+          [ -n "$SSHKEY" ] && sed -i "s|^SSH_AUTHORIZED_KEY=.*|SSH_AUTHORIZED_KEY=$SSHKEY|" hvh-image.conf || true
+      - run: python3 build_hvh_image.py -c hvh-image.conf -o out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hvh1-image
+          path: out/hvh1-haos-*.img.xz*
+          retention-days: 14
